@@ -23,7 +23,7 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
 
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 10),
       upperBound: double.infinity,
       value: FishClickerModel().globalClicks.toDouble(),
     );
