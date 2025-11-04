@@ -36,13 +36,32 @@ class _UsernameState extends State<Username> {
               maxLength: 20,
               focusNode: _focusNode,
               controller: _controller,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
+
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.purple, width: 4.0),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.purple, width: 4.0),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.orange, width: 4.0),
+                ),
+
                 labelText: "Username (required)",
                 floatingLabelAlignment: FloatingLabelAlignment.center,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
               textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.yellow,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'BabyDoll',
+              ),
               onSubmitted: (value) => FishClickerModel().userId = value.trim(),
             ),
           ),
@@ -53,7 +72,7 @@ class _UsernameState extends State<Username> {
                 FishClickerModel().userId = _controller.text.trim();
                 _focusNode.unfocus();
               },
-              icon: Icon(Icons.send),
+              icon: Icon(Icons.send, color: Colors.blue),
             ),
           ),
         ],

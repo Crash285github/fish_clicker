@@ -58,7 +58,7 @@ class _SpinningFishState extends State<SpinningFish>
     } else if (clicksPerSecond >= 5) {
       return Colors.blue.withAlpha(255);
     } else {
-      return Colors.white.withAlpha(255);
+      return Colors.white.withAlpha(100);
     }
   }
 

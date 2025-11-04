@@ -61,12 +61,14 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
       listenable: FishClickerModel(),
       builder: (context, child) => AnimatedBuilder(
         animation: _animationController!,
-        builder: (context, child) => Text(
-          _animationController!.value.round().toString(),
-          style: const TextStyle(
-            fontSize: 48,
-            fontFamily: 'BabyDoll',
-            color: Colors.yellow,
+        builder: (context, child) => FittedBox(
+          child: Text(
+            _animationController!.value.round().toString(),
+            style: const TextStyle(
+              fontSize: 64,
+              fontFamily: 'BabyDoll',
+              color: Colors.yellow,
+            ),
           ),
         ),
       ),
