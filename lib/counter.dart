@@ -63,7 +63,11 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
         animation: _animationController!,
         builder: (context, child) => Text(
           _animationController!.value.round().toString(),
-          style: const TextStyle(fontSize: 48, fontFamily: 'BabyDoll'),
+          style: const TextStyle(
+            fontSize: 48,
+            fontFamily: 'BabyDoll',
+            color: Colors.yellow,
+          ),
         ),
       ),
     );

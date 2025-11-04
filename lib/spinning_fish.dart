@@ -51,12 +51,12 @@ class _SpinningFishState extends State<SpinningFish>
   }
 
   Color get glowColor {
-    if (clicksPerSecond >= 10) {
-      return Colors.red.withAlpha(255);
-    } else if (clicksPerSecond >= 5) {
+    if (clicksPerSecond >= 30) {
+      return Colors.purple.withAlpha(255);
+    } else if (clicksPerSecond >= 15) {
       return Colors.orange.withAlpha(255);
-    } else if (clicksPerSecond >= 2) {
-      return Colors.green.withAlpha(255);
+    } else if (clicksPerSecond >= 5) {
+      return Colors.blue.withAlpha(255);
     } else {
       return Colors.white.withAlpha(255);
     }
@@ -71,7 +71,7 @@ class _SpinningFishState extends State<SpinningFish>
           return;
         }
 
-        if (clicksPerSecond < 12) {
+        if (clicksPerSecond < 35) {
           setState(() => clicksPerSecond += 1);
           _gifController
             ..stop()
@@ -94,13 +94,13 @@ class _SpinningFishState extends State<SpinningFish>
           alignment: Alignment.center,
           children: [
             AnimatedContainer(
-              height: MediaQuery.of(context).size.width / 1.5,
-              width: MediaQuery.of(context).size.width / 1.5,
-              duration: const Duration(milliseconds: 100),
+              height: MediaQuery.of(context).size.width / 1.1,
+              width: MediaQuery.of(context).size.width / 1.1,
+              duration: const Duration(milliseconds: 500),
               clipBehavior: Clip.none,
               decoration: BoxDecoration(
                 gradient: RadialGradient(
-                  colors: [glowColor, Colors.transparent],
+                  colors: [glowColor, glowColor.withAlpha(0)],
                   stops: const [.1, 1.0],
                 ),
               ),
@@ -108,7 +108,7 @@ class _SpinningFishState extends State<SpinningFish>
             Gif(
               image: AssetImage('assets/spinning_fish.gif'),
               controller: _gifController,
-              fps: min(600, clicksPerSecond * 60 + 1),
+              fps: min(30 * 60, clicksPerSecond * 60 + 1),
             ),
           ],
         ),

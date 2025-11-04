@@ -1,3 +1,5 @@
-# fish_clicker
+App that has a fish you can tap and it increases a global counter.
 
-A new Flutter project.
+Also has a leaderboard.
+
+Icon by that64guy.

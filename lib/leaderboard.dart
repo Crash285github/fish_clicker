@@ -12,8 +12,13 @@ class Leaderboard extends StatelessWidget {
         int i = 0;
         return SafeArea(
           child: Drawer(
+            shape: ContinuousRectangleBorder(
+              borderRadius: BorderRadiusGeometry.circular(64.0),
+              side: BorderSide(color: Colors.purple, width: 12.0),
+            ),
+
             child: ListView(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(16.0),
               children: [
                 Text(
                   'Leaderboard',
@@ -30,7 +35,7 @@ class Leaderboard extends StatelessWidget {
                       Text(
                         "${++i}.",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           color: Colors.orange,
                           fontFamily: 'BabyDoll',
                         ),
@@ -41,8 +46,10 @@ class Leaderboard extends StatelessWidget {
                           child: Text(
                             user.id,
                             style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.blue,
+                              fontSize: 20,
+                              color: user.id == FishClickerModel().userId
+                                  ? Colors.yellow
+                                  : Colors.blue,
                               fontFamily: 'BabyDoll',
                               fontWeight: FontWeight.bold,
                             ),
@@ -53,7 +60,7 @@ class Leaderboard extends StatelessWidget {
                       Text(
                         "${user.clicks}",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           color: Colors.grey,
                           fontFamily: 'BabyDoll',
                         ),

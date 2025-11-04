@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
+          seedColor: Colors.purple,
           brightness: Brightness.dark,
         ),
       ),
@@ -54,7 +54,7 @@ class MainApp extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Spacer(flex: 3),
-            Center(child: SpinningFish()),
+            SpinningFish(),
             Counter(),
             Spacer(flex: 3),
             Username(),
