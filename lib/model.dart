@@ -74,7 +74,7 @@ class FishClickerModel extends ChangeNotifier {
     await refreshClicks();
     notifyListeners();
 
-    _refreshTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
       if (userId == null) {
         return;
       }
