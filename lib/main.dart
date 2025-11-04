@@ -1,3 +1,4 @@
+import 'package:fish_clicker/spinning_fish.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,11 +10,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+    return MaterialApp(
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
         ),
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Image.asset('assets/fish.png', height: kToolbarHeight / 2),
+          centerTitle: true,
+        ),
+        body: Center(child: SpinningFish()),
       ),
     );
   }
