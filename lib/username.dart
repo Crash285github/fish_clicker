@@ -13,6 +13,8 @@ class _UsernameState extends State<Username> {
     text: FishClickerModel().userId ?? '',
   );
 
+  final FocusNode _focusNode = FocusNode();
+
   @override
   void dispose() {
     _controller.dispose();
@@ -32,8 +34,8 @@ class _UsernameState extends State<Username> {
             width: MediaQuery.of(context).size.width / 2,
             child: TextField(
               maxLength: 20,
+              focusNode: _focusNode,
               controller: _controller,
-              onTapOutside: (event) => FocusScope.of(context).unfocus(),
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
                 labelText: "Username (required)",
@@ -47,8 +49,10 @@ class _UsernameState extends State<Username> {
           Expanded(
             flex: 1,
             child: IconButton(
-              onPressed: () =>
-                  FishClickerModel().userId = _controller.text.trim(),
+              onPressed: () {
+                FishClickerModel().userId = _controller.text.trim();
+                _focusNode.unfocus();
+              },
               icon: Icon(Icons.send),
             ),
           ),

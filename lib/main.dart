@@ -26,6 +26,7 @@ class MainApp extends StatelessWidget {
         ),
       ),
       home: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Image.asset('assets/fish.png', height: kToolbarHeight / 2),
           centerTitle: true,
@@ -50,16 +51,24 @@ class MainApp extends StatelessWidget {
             ),
           ],
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Spacer(flex: 3),
-            SpinningFish(),
-            Counter(),
-            Spacer(flex: 3),
-            Username(),
-            Spacer(),
-          ],
+        body: SingleChildScrollView(
+          child: SizedBox(
+            height:
+                MediaQuery.of(context).size.height -
+                kToolbarHeight -
+                10 -
+                MediaQuery.of(context).padding.top,
+            child: Column(
+              children: [
+                Spacer(flex: 3),
+                SpinningFish(),
+                Counter(),
+                Spacer(flex: 3),
+                Username(),
+                Spacer(),
+              ],
+            ),
+          ),
         ),
         drawer: Leaderboard(),
       ),

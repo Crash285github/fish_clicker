@@ -73,9 +73,13 @@ class _SpinningFishState extends State<SpinningFish>
 
         if (clicksPerSecond < 35) {
           setState(() => clicksPerSecond += 1);
-          _gifController
-            ..stop()
-            ..repeat();
+          try {
+            _gifController
+              ..stop()
+              ..repeat();
+          } catch (e) {
+            // didnt init yet
+          }
         }
         FishClickerModel().addClick();
 

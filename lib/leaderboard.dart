@@ -29,45 +29,49 @@ class Leaderboard extends StatelessWidget {
                   ),
                 ),
                 Divider(),
-                ...FishClickerModel().leaderboard.map(
-                  (user) => Row(
-                    children: [
-                      Text(
-                        "${++i}.",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.orange,
-                          fontFamily: 'BabyDoll',
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            user.id,
+                ...FishClickerModel().leaderboard
+                    .take(100)
+                    .map(
+                      (user) => Row(
+                        children: [
+                          Text(
+                            "${++i}.",
                             style: TextStyle(
                               fontSize: 20,
-                              color: user.id == FishClickerModel().userId
-                                  ? Colors.yellow
-                                  : Colors.blue,
+                              color: Colors.orange,
                               fontFamily: 'BabyDoll',
-                              fontWeight: FontWeight.bold,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                user.id,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: user.id == FishClickerModel().userId
+                                      ? Colors.yellow
+                                      : Colors.blue,
+                                  fontFamily: 'BabyDoll',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "${user.clicks}",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.grey,
+                              fontFamily: 'BabyDoll',
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        "${user.clicks}",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.grey,
-                          fontFamily: 'BabyDoll',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
               ],
             ),
           ),
