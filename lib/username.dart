@@ -52,6 +52,11 @@ class _UsernameState extends State<Username> {
                 ),
 
                 labelText: "Username (required)",
+                labelStyle: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'BabyDoll',
+                ),
                 floatingLabelAlignment: FloatingLabelAlignment.center,
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),

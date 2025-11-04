@@ -1,4 +1,5 @@
 import 'package:fish_clicker/counter.dart';
+import 'package:fish_clicker/fish_logo.dart';
 import 'package:fish_clicker/leaderboard.dart';
 import 'package:fish_clicker/model.dart';
 import 'package:fish_clicker/spinning_fish.dart';
@@ -28,7 +29,7 @@ class MainApp extends StatelessWidget {
       home: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Image.asset('assets/fish.png', height: kToolbarHeight / 2),
+          title: FishLogo(),
           centerTitle: true,
           leading: Builder(
             builder: (context) => IconButton(
