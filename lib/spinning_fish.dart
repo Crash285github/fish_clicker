@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:fish_clicker/model.dart';
 import 'package:flutter/material.dart';
 import 'package:gif/gif.dart';
+import 'package:just_audio/just_audio.dart';
 
 class SpinningFish extends StatefulWidget {
   const SpinningFish({super.key});
@@ -18,14 +19,18 @@ class _SpinningFishState extends State<SpinningFish>
   late final Timer _clickDecreaseTimer;
   bool holding = false;
   int clicksPerSecond = 0;
+  final audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
     _gifController = GifController(vsync: this);
+
+    audioPlayer.setAsset('assets/fish_slap.mp3', preload: true);
+
     _clickDecreaseTimer = Timer.periodic(const Duration(milliseconds: 300), (
       _,
-    ) {
+    ) async {
       if (clicksPerSecond > 0) {
         setState(() => clicksPerSecond -= 1);
         if (clicksPerSecond == 0) {
@@ -61,7 +66,7 @@ class _SpinningFishState extends State<SpinningFish>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (FishClickerModel().userId == null ||
             FishClickerModel().userId!.isEmpty) {
           return;
@@ -74,6 +79,9 @@ class _SpinningFishState extends State<SpinningFish>
             ..repeat();
         }
         FishClickerModel().addClick();
+
+        await audioPlayer.seek(Duration.zero);
+        await audioPlayer.play();
       },
       onTapDown: (_) => setState(() => holding = true),
       onTapUp: (_) => setState(() => holding = false),

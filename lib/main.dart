@@ -29,6 +29,12 @@ class MainApp extends StatelessWidget {
         appBar: AppBar(
           title: Image.asset('assets/fish.png', height: kToolbarHeight / 2),
           centerTitle: true,
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.leaderboard),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+          ),
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
