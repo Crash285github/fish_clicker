@@ -35,6 +35,20 @@ class MainApp extends StatelessWidget {
               onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
+          actions: [
+            IconButton(
+              icon: ListenableBuilder(
+                listenable: FishClickerModel(),
+                builder: (context, child) => Icon(
+                  FishClickerModel().muteAudio
+                      ? Icons.volume_off
+                      : Icons.volume_up,
+                ),
+              ),
+              onPressed: () =>
+                  FishClickerModel().muteAudio = !FishClickerModel().muteAudio,
+            ),
+          ],
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,

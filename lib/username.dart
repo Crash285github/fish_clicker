@@ -19,6 +19,8 @@ class _UsernameState extends State<Username> {
     super.dispose();
   }
 
+  DateTime? lastUpdate;
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -39,13 +41,14 @@ class _UsernameState extends State<Username> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
               textAlign: TextAlign.center,
-              onSubmitted: (value) => FishClickerModel().userId = value,
+              onSubmitted: (value) => FishClickerModel().userId = value.trim(),
             ),
           ),
           Expanded(
             flex: 1,
             child: IconButton(
-              onPressed: () => FishClickerModel().userId = _controller.text,
+              onPressed: () =>
+                  FishClickerModel().userId = _controller.text.trim(),
               icon: Icon(Icons.send),
             ),
           ),

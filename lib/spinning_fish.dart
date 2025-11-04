@@ -25,7 +25,6 @@ class _SpinningFishState extends State<SpinningFish>
   void initState() {
     super.initState();
     _gifController = GifController(vsync: this);
-
     audioPlayer.setAsset('assets/fish_slap.mp3', preload: true);
 
     _clickDecreaseTimer = Timer.periodic(const Duration(milliseconds: 300), (
@@ -80,8 +79,10 @@ class _SpinningFishState extends State<SpinningFish>
         }
         FishClickerModel().addClick();
 
-        await audioPlayer.seek(Duration.zero);
-        await audioPlayer.play();
+        if (!FishClickerModel().muteAudio) {
+          await audioPlayer.seek(Duration.zero);
+          await audioPlayer.play();
+        }
       },
       onTapDown: (_) => setState(() => holding = true),
       onTapUp: (_) => setState(() => holding = false),

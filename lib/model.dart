@@ -14,18 +14,25 @@ class FishClickerModel extends ChangeNotifier {
   String? _userId;
   String? get userId => _userId;
   set userId(final String? value) {
-    refreshClicks().whenComplete(() {
-      _userId = value;
-      _localClicks = 0;
-      notifyListeners();
-    });
-
+    _userId = value;
+    notifyListeners();
     SharedPreferences.getInstance().then((prefs) {
       if (value == null || value.isEmpty) {
         prefs.remove('user_id');
       } else {
         prefs.setString('user_id', value);
       }
+    });
+  }
+
+  bool _muteAudio = false;
+  bool get muteAudio => _muteAudio;
+  set muteAudio(final bool value) {
+    _muteAudio = value;
+    notifyListeners();
+
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool('mute_audio', value);
     });
   }
 
@@ -63,6 +70,7 @@ class FishClickerModel extends ChangeNotifier {
     );
 
     await _getUserId();
+    await _getMuteAudio();
     await refreshClicks();
     notifyListeners();
 
@@ -119,6 +127,17 @@ class FishClickerModel extends ChangeNotifier {
 
     if (userId == null) {
       return;
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> _getMuteAudio() async {
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      muteAudio = prefs.getBool('mute_audio') ?? false;
+    } catch (e) {
+      prefs.clear();
     }
 
     notifyListeners();

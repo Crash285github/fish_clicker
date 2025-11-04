@@ -17,7 +17,11 @@ class Leaderboard extends StatelessWidget {
               children: [
                 Text(
                   'Leaderboard',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontFamily: 'BabyDoll',
+                  ),
                 ),
                 Divider(),
                 ...FishClickerModel().leaderboard.map(
@@ -25,21 +29,34 @@ class Leaderboard extends StatelessWidget {
                     children: [
                       Text(
                         "${++i}.",
-                        style: TextStyle(fontSize: 16, color: Colors.orange),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.orange,
+                          fontFamily: 'BabyDoll',
+                        ),
                       ),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
                             user.id,
-                            style: TextStyle(fontSize: 16, color: Colors.blue),
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.blue,
+                              fontFamily: 'BabyDoll',
+                              fontWeight: FontWeight.bold,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),
                       Text(
                         "${user.clicks}",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          fontFamily: 'BabyDoll',
+                        ),
                       ),
                     ],
                   ),
