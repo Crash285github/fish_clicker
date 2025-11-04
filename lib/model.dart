@@ -36,12 +36,26 @@ class FishClickerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  int _globalClicks = 0;
-  int get globalClicks => _globalClicks + _localClicks;
+  int get globalClicks {
+    int total = _localClicks;
+    for (final user in _leaderboard) {
+      if (user.id == userId) {
+        continue;
+      }
+
+      total += user.clicks;
+    }
+    return total;
+  }
 
   Timer? _refreshTimer;
 
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
+
+  final List<User> _leaderboard = [];
+  List<User> get leaderboard => List.unmodifiable(
+    _leaderboard..sort((a, b) => b.clicks.compareTo(a.clicks)),
+  );
 
   Future<void> init() async {
     await Firebase.initializeApp(
@@ -84,16 +98,14 @@ class FishClickerModel extends ChangeNotifier {
       }
     }
 
-    // Get global clicks
+    // Get leaderboard
     final snapshot = await collectionRef.get();
-    int totalClicks = 0;
+    _leaderboard.clear();
     for (var doc in snapshot.docs) {
       final data = doc.data();
-      if (doc.id == userId.toString()) continue;
-      totalClicks += (data['clicks'] as int?) ?? 0;
+      _leaderboard.add(User(id: doc.id, clicks: (data['clicks'] as int?) ?? 0));
     }
 
-    _globalClicks = totalClicks;
     notifyListeners();
   }
 
@@ -111,4 +123,11 @@ class FishClickerModel extends ChangeNotifier {
 
     notifyListeners();
   }
+}
+
+class User {
+  final String id;
+  final int clicks;
+
+  User({required this.id, required this.clicks});
 }

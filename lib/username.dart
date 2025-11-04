@@ -29,6 +29,7 @@ class _UsernameState extends State<Username> {
           SizedBox(
             width: MediaQuery.of(context).size.width / 2,
             child: TextField(
+              maxLength: 20,
               controller: _controller,
               onTapOutside: (event) => FocusScope.of(context).unfocus(),
               decoration: const InputDecoration(
