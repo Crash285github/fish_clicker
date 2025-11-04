@@ -1,7 +1,12 @@
+import 'package:fish_clicker/counter.dart';
+import 'package:fish_clicker/model.dart';
 import 'package:fish_clicker/spinning_fish.dart';
+import 'package:fish_clicker/username.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FishClickerModel().init();
   runApp(const MainApp());
 }
 
@@ -22,7 +27,14 @@ class MainApp extends StatelessWidget {
           title: Image.asset('assets/fish.png', height: kToolbarHeight / 2),
           centerTitle: true,
         ),
-        body: Center(child: SpinningFish()),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(child: SpinningFish()),
+            Counter(),
+            Username()
+          ],
+        ),
       ),
     );
   }
