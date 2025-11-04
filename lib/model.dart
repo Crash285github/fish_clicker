@@ -11,6 +11,9 @@ class FishClickerModel extends ChangeNotifier {
   factory FishClickerModel() => _instance;
   FishClickerModel._internal();
 
+  final syncNotifier = ValueNotifier(0);
+  bool _sendingRefreshRequests = false;
+
   String? _userId;
   String? get userId => _userId;
   set userId(final String? value) {
@@ -79,6 +82,10 @@ class FishClickerModel extends ChangeNotifier {
         return;
       }
 
+      if (_sendingRefreshRequests) {
+        return;
+      }
+
       await refreshClicks();
       notifyListeners();
     });
@@ -89,6 +96,7 @@ class FishClickerModel extends ChangeNotifier {
   }
 
   Future<void> refreshClicks() async {
+    _sendingRefreshRequests = true;
     final collectionRef = firestore.collection('clicks');
 
     // Update user clicks
@@ -114,6 +122,8 @@ class FishClickerModel extends ChangeNotifier {
       _leaderboard.add(User(id: doc.id, clicks: (data['clicks'] as int?) ?? 0));
     }
 
+    syncNotifier.value++;
+    _sendingRefreshRequests = false;
     notifyListeners();
   }
 
