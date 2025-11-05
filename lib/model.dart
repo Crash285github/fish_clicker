@@ -18,6 +18,7 @@ class FishClickerModel extends ChangeNotifier {
   String? get userId => _userId;
   set userId(final String? value) {
     _userId = value;
+    _localClicks = 0;
     notifyListeners();
     SharedPreferences.getInstance().then((prefs) {
       if (value == null || value.isEmpty) {
