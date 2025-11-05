@@ -118,7 +118,7 @@ class _LeaderboardState extends State<Leaderboard> {
                           ),
                         ),
                         Spacer(),
-                        Icon(Icons.info_outline, color: Colors.blue),
+                        Icon(Icons.update, color: Colors.blue),
                       ],
                     ),
                   ),

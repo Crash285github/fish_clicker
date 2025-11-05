@@ -55,6 +55,10 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
     );
   }
 
+  String get percentageOfAllClicks =>
+      (FishClickerModel().localClicks / FishClickerModel().globalClicks * 100)
+          .toStringAsFixed(2);
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -76,7 +80,9 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
             ),
             FittedBox(
               child: Text(
-                "Your clicks: ${FishClickerModel().localClicks}",
+                "Your clicks: ${FishClickerModel().localClicks}\n"
+                "$percentageOfAllClicks% of all clicks\n",
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 24,
                   fontFamily: 'BabyDoll',
