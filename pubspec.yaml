@@ -35,6 +35,7 @@ flutter:
     - assets/fish.png
     - assets/fish_slap.mp3
     - assets/goldfish.mp3
+    - assets/stonks.jpg
 
   fonts:
     - family: BabyDoll

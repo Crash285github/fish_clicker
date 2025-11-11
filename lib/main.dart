@@ -4,6 +4,7 @@ import 'package:fish_clicker/leaderboard.dart';
 import 'package:fish_clicker/model.dart';
 import 'package:fish_clicker/settings.dart';
 import 'package:fish_clicker/spinning_fish.dart';
+import 'package:fish_clicker/stocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -29,6 +30,9 @@ class MainApp extends StatelessWidget {
       home: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
           title: FishLogo(),
           centerTitle: true,
           leading: Builder(
@@ -75,6 +79,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [SpinningFish(), Counter()]);
+    return Stack(
+      children: [
+        Column(children: [GlobalClicks(), SpinningFish(), LocalClicks()]),
+        Align(alignment: AlignmentGeometry.bottomCenter, child: Stocks()),
+      ],
+    );
   }
 }

@@ -2,14 +2,15 @@ import 'package:fish_clicker/model.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
-class Counter extends StatefulWidget {
-  const Counter({super.key});
+class GlobalClicks extends StatefulWidget {
+  const GlobalClicks({super.key});
 
   @override
-  State<Counter> createState() => _CounterState();
+  State<GlobalClicks> createState() => _GlobalClicksState();
 }
 
-class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
+class _GlobalClicksState extends State<GlobalClicks>
+    with SingleTickerProviderStateMixin {
   int multipleOf200 = 0;
   final audioPlayer = AudioPlayer();
   AnimationController? _animationController;
@@ -61,37 +62,47 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ListenableBuilder(
-        listenable: FishClickerModel(),
-        builder: (context, child) => AnimatedBuilder(
-          animation: _animationController!,
-          builder: (context, child) => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FittedBox(
-                child: Text(
-                  _animationController!.value.round().toString(),
-                  style: const TextStyle(
-                    fontSize: 64,
-                    fontFamily: 'BabyDoll',
-                    color: Colors.yellow,
-                  ),
-                ),
+    return AnimatedBuilder(
+      animation: _animationController!,
+      builder: (context, child) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FittedBox(
+            child: Text(
+              _animationController!.value.round().toString(),
+              style: const TextStyle(
+                fontSize: 64,
+                fontFamily: 'BabyDoll',
+                color: Colors.yellow,
               ),
-              FittedBox(
-                child: Text(
-                  "Your clicks: ${FishClickerModel().localClicks}\n"
-                  "$percentageOfAllClicks% of all clicks\n",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontFamily: 'BabyDoll',
-                    color: Colors.purple,
-                  ),
-                ),
-              ),
-            ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LocalClicks extends StatelessWidget {
+  const LocalClicks({super.key});
+
+  String get percentageOfAllClicks =>
+      (FishClickerModel().localClicks / FishClickerModel().globalClicks * 100)
+          .toStringAsFixed(2);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: FishClickerModel(),
+      builder: (context, child) => FittedBox(
+        child: Text(
+          "Your clicks: ${FishClickerModel().localClicks}\n"
+          "$percentageOfAllClicks% of all points\n",
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 24,
+            fontFamily: 'BabyDoll',
+            color: Colors.purple,
           ),
         ),
       ),

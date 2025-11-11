@@ -109,11 +109,11 @@ class _SpinningFishState extends State<SpinningFish>
                     stops: const [.1, 1.0],
                   ),
                 ),
-              ),
-              Gif(
-                image: AssetImage('assets/spinning_fish.gif'),
-                controller: _gifController,
-                fps: min(30 * 60, clicksPerSecond * 60 + 1),
+                child: Gif(
+                  image: AssetImage('assets/spinning_fish.gif'),
+                  controller: _gifController,
+                  fps: min(30 * 60, clicksPerSecond * 60 + 1),
+                ),
               ),
             ],
           ),

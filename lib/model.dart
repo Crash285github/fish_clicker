@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,6 +29,37 @@ class FishClickerModel extends ChangeNotifier {
       }
     });
   }
+
+  double _money = 0;
+  double get money => _money;
+  set money(final double value) {
+    _money = value;
+    notifyListeners();
+  }
+
+  bool _canBuyOrSellStocks = false;
+  bool get canBuyOrSellStocks => _canBuyOrSellStocks;
+  set canBuyOrSellStocks(final bool value) {
+    _canBuyOrSellStocks = value;
+    notifyListeners();
+  }
+
+  int _stocks = 0;
+  int get stocks => _stocks;
+  set stocks(final int value) {
+    _stocks = value;
+    notifyListeners();
+  }
+
+  double _stockMultiplier = 1.0;
+  double get stockMultiplier => _stockMultiplier;
+  set stockMultiplier(final double value) {
+    _stockMultiplier = value;
+    notifyListeners();
+  }
+
+  static const double stockBasePrice = 5.0;
+  double get stockPrice => stockBasePrice * stockMultiplier;
 
   bool _muteAudio = false;
   bool get muteAudio => _muteAudio;
@@ -59,8 +91,6 @@ class FishClickerModel extends ChangeNotifier {
     return total;
   }
 
-  Timer? _refreshTimer;
-
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
   final List<User> _leaderboard = [];
@@ -75,10 +105,13 @@ class FishClickerModel extends ChangeNotifier {
 
     await _getUserId();
     await _getMuteAudio();
-    await refreshClicks();
+    await _getStocks();
+    await _getMoney();
+    await sync();
     notifyListeners();
 
-    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+    // sync clicks every 30 seconds
+    Timer.periodic(const Duration(seconds: 30), (_) async {
       if (userId == null) {
         return;
       }
@@ -87,16 +120,59 @@ class FishClickerModel extends ChangeNotifier {
         return;
       }
 
-      await refreshClicks();
+      money += Random().nextDouble() * 3;
+
+      await sync();
       notifyListeners();
     });
+
+    // stocks
+    Timer.periodic(const Duration(seconds: 2), recalculateStocks);
   }
 
-  void shutdown() {
-    _refreshTimer?.cancel();
+  void recalculateStocks(_) {
+    final minValue = 0.5 - _stockMultiplier;
+    final maxValue = 3 - _stockMultiplier;
+    final rand = Random().nextDouble() * (maxValue - minValue) + minValue;
+
+    final extra = Random().nextDouble() * 0.2 - 0.2;
+
+    stockMultiplier += rand + extra;
+    canBuyOrSellStocks = true;
   }
 
-  Future<void> refreshClicks() async {
+  VoidCallback? get buyStock =>
+      canBuyOrSellStocks && money >= stockPrice ? _buyStock : null;
+  void _buyStock() {
+    if (money >= stockPrice) {
+      money -= stockPrice;
+      stocks += 1;
+
+      canBuyOrSellStocks = false;
+    }
+  }
+
+  VoidCallback? get sellStock =>
+      canBuyOrSellStocks && stocks >= 1 ? _sellStock : null;
+  void _sellStock() {
+    if (stocks >= 1) {
+      money += stockPrice;
+      stocks -= 1;
+
+      canBuyOrSellStocks = false;
+    }
+  }
+
+  VoidCallback? get convertMoneyToPoints =>
+      money >= 1 ? _convertMoneyToPoints : null;
+  void _convertMoneyToPoints() {
+    final pointsToAdd = money ~/ 1;
+    money -= pointsToAdd;
+    _localClicks += pointsToAdd.toInt();
+    notifyListeners();
+  }
+
+  Future<void> sync() async {
     _sendingRefreshRequests = true;
     final collectionRef = firestore.collection('clicks');
 
@@ -123,6 +199,11 @@ class FishClickerModel extends ChangeNotifier {
       _leaderboard.add(User(id: doc.id, clicks: (data['clicks'] as int?) ?? 0));
     }
 
+    await SharedPreferences.getInstance().then((prefs) {
+      prefs.setDouble('money', money);
+      prefs.setInt('stocks', stocks);
+    });
+
     syncNotifier.value++;
     _sendingRefreshRequests = false;
     notifyListeners();
@@ -147,6 +228,28 @@ class FishClickerModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     try {
       muteAudio = prefs.getBool('mute_audio') ?? false;
+    } catch (e) {
+      prefs.clear();
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> _getStocks() async {
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      stocks = prefs.getInt('stocks') ?? 0;
+    } catch (e) {
+      prefs.clear();
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> _getMoney() async {
+    final prefs = await SharedPreferences.getInstance();
+    try {
+      money = prefs.getDouble('money') ?? 0;
     } catch (e) {
       prefs.clear();
     }

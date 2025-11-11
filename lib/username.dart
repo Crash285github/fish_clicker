@@ -74,8 +74,14 @@ class _UsernameState extends State<Username> {
               FishClickerModel().userId = _controller.text.trim();
               _focusNode.unfocus();
             },
+
             style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll(Colors.yellow),
+              shape: WidgetStatePropertyAll(
+                ContinuousRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(24.0),
+                  side: BorderSide(color: Colors.yellow, width: 2.0),
+                ),
+              ),
               padding: WidgetStatePropertyAll(
                 EdgeInsets.symmetric(horizontal: 24.0, vertical: 0.0),
               ),
@@ -84,7 +90,7 @@ class _UsernameState extends State<Username> {
               "Confirm",
               style: TextStyle(
                 fontSize: 20,
-                color: Colors.black,
+                color: Colors.yellow,
                 fontFamily: 'BabyDoll',
               ),
             ),
