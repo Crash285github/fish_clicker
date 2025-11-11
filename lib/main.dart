@@ -2,8 +2,9 @@ import 'package:fish_clicker/counter.dart';
 import 'package:fish_clicker/fish_logo.dart';
 import 'package:fish_clicker/leaderboard.dart';
 import 'package:fish_clicker/model.dart';
+import 'package:fish_clicker/settings.dart';
 import 'package:fish_clicker/spinning_fish.dart';
-import 'package:fish_clicker/username.dart';
+import 'package:fish_clicker/stocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -29,6 +30,9 @@ class MainApp extends StatelessWidget {
       home: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
           title: FishLogo(),
           centerTitle: true,
           leading: Builder(
@@ -38,41 +42,48 @@ class MainApp extends StatelessWidget {
             ),
           ),
           actions: [
-            IconButton(
-              icon: ListenableBuilder(
-                listenable: FishClickerModel(),
-                builder: (context, child) => Icon(
-                  FishClickerModel().muteAudio
-                      ? Icons.volume_off
-                      : Icons.volume_up,
-                ),
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
               ),
-              onPressed: () =>
-                  FishClickerModel().muteAudio = !FishClickerModel().muteAudio,
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: SizedBox(
-            height:
-                MediaQuery.of(context).size.height -
-                kToolbarHeight -
-                10 -
-                MediaQuery.of(context).padding.top,
-            child: Column(
-              children: [
-                Spacer(flex: 3),
-                SpinningFish(),
-                Counter(),
-                Spacer(flex: 3),
-                Username(),
-                Spacer(),
-              ],
-            ),
-          ),
-        ),
+        body: Home(),
         drawer: Leaderboard(),
+        endDrawer: Settings(),
       ),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  void initState() {
+    super.initState();
+    if (FishClickerModel().userId == null ||
+        FishClickerModel().userId!.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Scaffold.of(context).openEndDrawer();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Column(children: [GlobalClicks(), SpinningFish(), LocalClicks()]),
+        Align(alignment: AlignmentGeometry.bottomCenter, child: Stocks()),
+      ],
     );
   }
 }

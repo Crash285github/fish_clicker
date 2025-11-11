@@ -64,57 +64,59 @@ class _SpinningFishState extends State<SpinningFish>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        if (FishClickerModel().userId == null ||
-            FishClickerModel().userId!.isEmpty) {
-          return;
-        }
-
-        if (clicksPerSecond < 35) {
-          setState(() => clicksPerSecond += 1);
-          try {
-            _gifController
-              ..stop()
-              ..repeat();
-          } catch (e) {
-            // didnt init yet
+    return Center(
+      child: GestureDetector(
+        onTap: () async {
+          if (FishClickerModel().userId == null ||
+              FishClickerModel().userId!.isEmpty) {
+            return;
           }
-        }
-        FishClickerModel().addClick();
 
-        if (!FishClickerModel().muteAudio) {
-          await audioPlayer.seek(Duration.zero);
-          await audioPlayer.play();
-        }
-      },
-      onTapDown: (_) => setState(() => holding = true),
-      onTapUp: (_) => setState(() => holding = false),
-      onTapCancel: () => setState(() => holding = false),
-      child: AnimatedScale(
-        scale: holding ? 1.1 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            AnimatedContainer(
-              height: MediaQuery.of(context).size.width / 1.1,
-              width: MediaQuery.of(context).size.width / 1.1,
-              duration: const Duration(milliseconds: 500),
-              clipBehavior: Clip.none,
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  colors: [glowColor, glowColor.withAlpha(0)],
-                  stops: const [.1, 1.0],
+          if (clicksPerSecond < 35) {
+            setState(() => clicksPerSecond += 1);
+            try {
+              _gifController
+                ..stop()
+                ..repeat();
+            } catch (e) {
+              // didnt init yet
+            }
+          }
+          FishClickerModel().addClick();
+
+          if (!FishClickerModel().muteAudio) {
+            await audioPlayer.seek(Duration.zero);
+            await audioPlayer.play();
+          }
+        },
+        onTapDown: (_) => setState(() => holding = true),
+        onTapUp: (_) => setState(() => holding = false),
+        onTapCancel: () => setState(() => holding = false),
+        child: AnimatedScale(
+          scale: holding ? 1.1 : 1.0,
+          duration: const Duration(milliseconds: 100),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AnimatedContainer(
+                height: MediaQuery.of(context).size.width / 1.1,
+                width: MediaQuery.of(context).size.width / 1.1,
+                duration: const Duration(milliseconds: 500),
+                clipBehavior: Clip.none,
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    colors: [glowColor, glowColor.withAlpha(0)],
+                    stops: const [.1, 1.0],
+                  ),
+                ),
+                child: Gif(
+                  image: AssetImage('assets/spinning_fish.gif'),
+                  controller: _gifController,
+                  fps: min(30 * 60, clicksPerSecond * 60 + 1),
                 ),
               ),
-            ),
-            Gif(
-              image: AssetImage('assets/spinning_fish.gif'),
-              controller: _gifController,
-              fps: min(30 * 60, clicksPerSecond * 60 + 1),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

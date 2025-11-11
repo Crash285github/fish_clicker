@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +28,27 @@ class FishClickerModel extends ChangeNotifier {
         prefs.setString('user_id', value);
       }
     });
+  }
+
+  double _money = 0;
+  double get money => _money;
+  set money(final double value) {
+    _money = value;
+    notifyListeners();
+  }
+
+  int _stocks = 0;
+  int get stocks => _stocks;
+  set stocks(final int value) {
+    _stocks = value;
+    notifyListeners();
+  }
+
+  double _stockPrice = 30.0;
+  double get stockPrice => _stockPrice;
+  set stockPrice(final double value) {
+    _stockPrice = value;
+    notifyListeners();
   }
 
   bool _muteAudio = false;
@@ -59,8 +81,6 @@ class FishClickerModel extends ChangeNotifier {
     return total;
   }
 
-  Timer? _refreshTimer;
-
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
   final List<User> _leaderboard = [];
@@ -75,10 +95,11 @@ class FishClickerModel extends ChangeNotifier {
 
     await _getUserId();
     await _getMuteAudio();
-    await refreshClicks();
+    await sync();
     notifyListeners();
 
-    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+    // sync clicks every 30 seconds
+    Timer.periodic(const Duration(seconds: 30), (_) async {
       if (userId == null) {
         return;
       }
@@ -87,16 +108,48 @@ class FishClickerModel extends ChangeNotifier {
         return;
       }
 
-      await refreshClicks();
+      money += Random().nextDouble() * 30;
+
+      await sync();
       notifyListeners();
     });
+
+    // stocks
+    Timer.periodic(const Duration(seconds: 3), recalculateStocks);
   }
 
-  void shutdown() {
-    _refreshTimer?.cancel();
+  void recalculateStocks(_) {
+    final minValue = -8.1;
+    final maxValue = 8;
+    final rand = Random().nextDouble() * (maxValue - minValue) + minValue;
+
+    stockPrice = max(1, rand + stockPrice);
   }
 
-  Future<void> refreshClicks() async {
+  void buyStock(final double price) {
+    if (money >= price) {
+      money -= price;
+      stocks += 1;
+    }
+  }
+
+  void sellStock(final double price) {
+    if (stocks >= 1) {
+      money += price;
+      stocks -= 1;
+    }
+  }
+
+  VoidCallback? get convertMoneyToPoints =>
+      money >= 1 ? _convertMoneyToPoints : null;
+  void _convertMoneyToPoints() {
+    final pointsToAdd = money ~/ 1;
+    money -= pointsToAdd;
+    _localClicks += pointsToAdd.toInt();
+    notifyListeners();
+  }
+
+  Future<void> sync() async {
     _sendingRefreshRequests = true;
     final collectionRef = firestore.collection('clicks');
 
