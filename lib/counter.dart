@@ -61,36 +61,38 @@ class _CounterState extends State<Counter> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: FishClickerModel(),
-      builder: (context, child) => AnimatedBuilder(
-        animation: _animationController!,
-        builder: (context, child) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FittedBox(
-              child: Text(
-                _animationController!.value.round().toString(),
-                style: const TextStyle(
-                  fontSize: 64,
-                  fontFamily: 'BabyDoll',
-                  color: Colors.yellow,
+    return Center(
+      child: ListenableBuilder(
+        listenable: FishClickerModel(),
+        builder: (context, child) => AnimatedBuilder(
+          animation: _animationController!,
+          builder: (context, child) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FittedBox(
+                child: Text(
+                  _animationController!.value.round().toString(),
+                  style: const TextStyle(
+                    fontSize: 64,
+                    fontFamily: 'BabyDoll',
+                    color: Colors.yellow,
+                  ),
                 ),
               ),
-            ),
-            FittedBox(
-              child: Text(
-                "Your clicks: ${FishClickerModel().localClicks}\n"
-                "$percentageOfAllClicks% of all clicks\n",
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontFamily: 'BabyDoll',
-                  color: Colors.purple,
+              FittedBox(
+                child: Text(
+                  "Your clicks: ${FishClickerModel().localClicks}\n"
+                  "$percentageOfAllClicks% of all clicks\n",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontFamily: 'BabyDoll',
+                    color: Colors.purple,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
