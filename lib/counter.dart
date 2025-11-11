@@ -19,8 +19,6 @@ class _GlobalClicksState extends State<GlobalClicks>
   void initState() {
     super.initState();
     audioPlayer.setAsset('assets/goldfish.mp3', preload: true);
-    FishClickerModel().addListener(_updateRemainder);
-    FishClickerModel().addListener(_updateValue);
 
     _animationController = AnimationController(
       vsync: this,
@@ -28,6 +26,9 @@ class _GlobalClicksState extends State<GlobalClicks>
       upperBound: double.infinity,
       value: FishClickerModel().globalClicks.toDouble(),
     );
+
+    FishClickerModel().addListener(_updateRemainder);
+    FishClickerModel().addListener(_updateValue);
   }
 
   @override

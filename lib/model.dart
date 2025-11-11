@@ -51,15 +51,12 @@ class FishClickerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  double _stockMultiplier = 1.0;
-  double get stockMultiplier => _stockMultiplier;
-  set stockMultiplier(final double value) {
-    _stockMultiplier = value;
+  double _stockPrice = 30.0;
+  double get stockPrice => _stockPrice;
+  set stockPrice(final double value) {
+    _stockPrice = value;
     notifyListeners();
   }
-
-  static const double stockBasePrice = 5.0;
-  double get stockPrice => stockBasePrice * stockMultiplier;
 
   bool _muteAudio = false;
   bool get muteAudio => _muteAudio;
@@ -105,8 +102,6 @@ class FishClickerModel extends ChangeNotifier {
 
     await _getUserId();
     await _getMuteAudio();
-    await _getStocks();
-    await _getMoney();
     await sync();
     notifyListeners();
 
@@ -120,43 +115,37 @@ class FishClickerModel extends ChangeNotifier {
         return;
       }
 
-      money += Random().nextDouble() * 3;
+      money += Random().nextDouble() * 30;
 
       await sync();
       notifyListeners();
     });
 
     // stocks
-    Timer.periodic(const Duration(seconds: 2), recalculateStocks);
+    Timer.periodic(const Duration(seconds: 1), recalculateStocks);
   }
 
   void recalculateStocks(_) {
-    final minValue = 0.5 - _stockMultiplier;
-    final maxValue = 3 - _stockMultiplier;
+    final minValue = -8.1;
+    final maxValue = 8;
     final rand = Random().nextDouble() * (maxValue - minValue) + minValue;
 
-    final extra = Random().nextDouble() * 0.2 - 0.2;
-
-    stockMultiplier += rand + extra;
+    stockPrice = max(1, rand + stockPrice);
     canBuyOrSellStocks = true;
   }
 
-  VoidCallback? get buyStock =>
-      canBuyOrSellStocks && money >= stockPrice ? _buyStock : null;
-  void _buyStock() {
-    if (money >= stockPrice) {
-      money -= stockPrice;
+  void buyStock(final double price) {
+    if (money >= price) {
+      money -= price;
       stocks += 1;
 
       canBuyOrSellStocks = false;
     }
   }
 
-  VoidCallback? get sellStock =>
-      canBuyOrSellStocks && stocks >= 1 ? _sellStock : null;
-  void _sellStock() {
+  void sellStock(final double price) {
     if (stocks >= 1) {
-      money += stockPrice;
+      money += price;
       stocks -= 1;
 
       canBuyOrSellStocks = false;
@@ -199,11 +188,6 @@ class FishClickerModel extends ChangeNotifier {
       _leaderboard.add(User(id: doc.id, clicks: (data['clicks'] as int?) ?? 0));
     }
 
-    await SharedPreferences.getInstance().then((prefs) {
-      prefs.setDouble('money', money);
-      prefs.setInt('stocks', stocks);
-    });
-
     syncNotifier.value++;
     _sendingRefreshRequests = false;
     notifyListeners();
@@ -228,28 +212,6 @@ class FishClickerModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     try {
       muteAudio = prefs.getBool('mute_audio') ?? false;
-    } catch (e) {
-      prefs.clear();
-    }
-
-    notifyListeners();
-  }
-
-  Future<void> _getStocks() async {
-    final prefs = await SharedPreferences.getInstance();
-    try {
-      stocks = prefs.getInt('stocks') ?? 0;
-    } catch (e) {
-      prefs.clear();
-    }
-
-    notifyListeners();
-  }
-
-  Future<void> _getMoney() async {
-    final prefs = await SharedPreferences.getInstance();
-    try {
-      money = prefs.getDouble('money') ?? 0;
     } catch (e) {
       prefs.clear();
     }
