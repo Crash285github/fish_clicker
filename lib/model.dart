@@ -37,13 +37,6 @@ class FishClickerModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _canBuyOrSellStocks = false;
-  bool get canBuyOrSellStocks => _canBuyOrSellStocks;
-  set canBuyOrSellStocks(final bool value) {
-    _canBuyOrSellStocks = value;
-    notifyListeners();
-  }
-
   int _stocks = 0;
   int get stocks => _stocks;
   set stocks(final int value) {
@@ -122,7 +115,7 @@ class FishClickerModel extends ChangeNotifier {
     });
 
     // stocks
-    Timer.periodic(const Duration(seconds: 1), recalculateStocks);
+    Timer.periodic(const Duration(seconds: 3), recalculateStocks);
   }
 
   void recalculateStocks(_) {
@@ -131,15 +124,12 @@ class FishClickerModel extends ChangeNotifier {
     final rand = Random().nextDouble() * (maxValue - minValue) + minValue;
 
     stockPrice = max(1, rand + stockPrice);
-    canBuyOrSellStocks = true;
   }
 
   void buyStock(final double price) {
     if (money >= price) {
       money -= price;
       stocks += 1;
-
-      canBuyOrSellStocks = false;
     }
   }
 
@@ -147,8 +137,6 @@ class FishClickerModel extends ChangeNotifier {
     if (stocks >= 1) {
       money += price;
       stocks -= 1;
-
-      canBuyOrSellStocks = false;
     }
   }
 

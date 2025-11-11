@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:fish_clicker/model.dart';
@@ -11,53 +12,63 @@ class Stocks extends StatefulWidget {
   State<Stocks> createState() => _StocksState();
 }
 
-class _StocksState extends State<Stocks> with SingleTickerProviderStateMixin {
+class _StocksState extends State<Stocks> with TickerProviderStateMixin {
   final DraggableScrollableController _controller =
       DraggableScrollableController();
 
-  AnimationController? _animationController;
+  AnimationController? _priceAnimator;
+  AnimationController? _moneyAnimator;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
+    _priceAnimator = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 3),
       upperBound: double.infinity,
       value: FishClickerModel().stockPrice,
     );
 
+    _moneyAnimator = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+      upperBound: double.infinity,
+      value: FishClickerModel().money,
+    );
+
     FishClickerModel().addListener(_updateValue);
+    FishClickerModel().addListener(_updateMoney);
   }
 
   @override
   void dispose() {
     FishClickerModel().removeListener(_updateValue);
-    _animationController?.dispose();
+    FishClickerModel().removeListener(_updateMoney);
+    _priceAnimator?.dispose();
+    _moneyAnimator?.dispose();
     super.dispose();
   }
 
-  void _updateValue() {
-    _animationController?.animateTo(
-      FishClickerModel().stockPrice,
-      curve: Curves.linear,
-    );
-  }
+  void _updateValue() => _priceAnimator?.animateTo(
+    FishClickerModel().stockPrice,
+    curve: Curves.linear,
+  );
+
+  void _updateMoney() =>
+      _moneyAnimator?.animateTo(FishClickerModel().money, curve: Curves.linear);
 
   bool get canBuy =>
-      FishClickerModel().money >= _animationController!.value &&
-      FishClickerModel().canBuyOrSellStocks;
+      _moneyAnimator!.value >= _priceAnimator!.value && enabledButtons;
+  bool get canSell => FishClickerModel().stocks >= 1 && enabledButtons;
 
-  bool get canSell =>
-      FishClickerModel().stocks >= 1 && FishClickerModel().canBuyOrSellStocks;
-
+  bool enabledButtons = true;
   @override
   Widget build(BuildContext context) {
-    final minSize = 250 / MediaQuery.sizeOf(context).height;
+    final minSize = 210 / MediaQuery.sizeOf(context).height;
     final height = 270;
 
     return SizedBox(
-      height: height + 20,
+      height: height + 50,
       child: DraggableScrollableSheet(
         controller: _controller,
         maxChildSize: 1,
@@ -114,10 +125,10 @@ class _StocksState extends State<Stocks> with SingleTickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                            ListenableBuilder(
-                              listenable: FishClickerModel(),
+                            AnimatedBuilder(
+                              animation: _moneyAnimator!,
                               builder: (context, child) => Text(
-                                "Your money: ${FishClickerModel().money.toStringAsFixed(2)}\$",
+                                "Your money: ${_moneyAnimator!.value.toStringAsFixed(2)}\$",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontFamily: 'BabyDoll',
@@ -136,9 +147,9 @@ class _StocksState extends State<Stocks> with SingleTickerProviderStateMixin {
                             ),
                             Spacer(),
                             AnimatedBuilder(
-                              animation: _animationController!,
+                              animation: _priceAnimator!,
                               builder: (context, child) => Text(
-                                "Value: ${_animationController!.value.toStringAsFixed(2)}\$",
+                                "Value: ${_priceAnimator!.value.toStringAsFixed(2)}\$",
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontFamily: 'BabyDoll',
@@ -157,27 +168,47 @@ class _StocksState extends State<Stocks> with SingleTickerProviderStateMixin {
                             SyncIndicator(),
                             Spacer(),
                             AnimatedBuilder(
-                              animation: _animationController!,
+                              animation: _priceAnimator!,
                               builder: (context, child) => _Button(
                                 color: Colors.blue,
-                                text: "Buy",
+                                text: "Buy stock",
                                 onPressed: canBuy
-                                    ? () => FishClickerModel().buyStock(
-                                        _animationController!.value,
-                                      )
+                                    ? () {
+                                        setState(() => enabledButtons = false);
+                                        Future.delayed(
+                                          const Duration(seconds: 1),
+                                          () => setState(
+                                            () => enabledButtons = true,
+                                          ),
+                                        );
+
+                                        FishClickerModel().buyStock(
+                                          _priceAnimator!.value,
+                                        );
+                                      }
                                     : null,
                               ),
                             ),
                             SizedBox(height: 12.0),
                             AnimatedBuilder(
-                              animation: _animationController!,
+                              animation: _priceAnimator!,
                               builder: (context, child) => _Button(
                                 color: Colors.orange,
-                                text: "Sell",
+                                text: "Sell stock",
                                 onPressed: canSell
-                                    ? () => FishClickerModel().sellStock(
-                                        _animationController!.value,
-                                      )
+                                    ? () {
+                                        setState(() => enabledButtons = false);
+                                        Future.delayed(
+                                          const Duration(seconds: 1),
+                                          () => setState(
+                                            () => enabledButtons = true,
+                                          ),
+                                        );
+
+                                        FishClickerModel().sellStock(
+                                          _priceAnimator!.value,
+                                        );
+                                      }
                                     : null,
                               ),
                             ),

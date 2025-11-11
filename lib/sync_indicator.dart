@@ -40,12 +40,12 @@ class _SyncIndicatorState extends State<SyncIndicator>
   }
 
   Color get color => FishClickerModel().syncNotifier.value % 2 == 0
-      ? Colors.blue
-      : Colors.blueGrey[900]!;
+      ? Colors.purple
+      : Colors.purple[900]!;
 
   Color get backgroundColor => FishClickerModel().syncNotifier.value % 2 == 0
-      ? Colors.blueGrey[900]!
-      : Colors.blue;
+      ? Colors.purple[900]!
+      : Colors.purple;
 
   @override
   Widget build(BuildContext context) {
