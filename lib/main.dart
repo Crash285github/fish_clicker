@@ -27,32 +27,34 @@ class MainApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          title: FishLogo(),
-          centerTitle: true,
-          leading: Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.leaderboard),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
-          ),
-          actions: [
-            Builder(
+      home: Center(
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            title: FishLogo(),
+            centerTitle: true,
+            leading: Builder(
               builder: (context) => IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                icon: Icon(Icons.leaderboard),
+                onPressed: () => Scaffold.of(context).openDrawer(),
               ),
             ),
-          ],
+            actions: [
+              Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: () => Scaffold.of(context).openEndDrawer(),
+                ),
+              ),
+            ],
+          ),
+          body: Home(),
+          drawer: Leaderboard(),
+          endDrawer: Settings(),
         ),
-        body: Home(),
-        drawer: Leaderboard(),
-        endDrawer: Settings(),
       ),
     );
   }
@@ -79,11 +81,17 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(children: [GlobalClicks(), SpinningFish(), LocalClicks()]),
-        Align(alignment: AlignmentGeometry.bottomCenter, child: Stocks()),
-      ],
+    return Center(
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [GlobalClicks(), SpinningFish(), LocalClicks()],
+            ),
+          ),
+          Align(alignment: AlignmentGeometry.bottomCenter, child: Stocks()),
+        ],
+      ),
     );
   }
 }

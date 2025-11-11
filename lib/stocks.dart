@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:fish_clicker/model.dart';
@@ -38,10 +39,23 @@ class _StocksState extends State<Stocks> with TickerProviderStateMixin {
 
     FishClickerModel().addListener(_updateValue);
     FishClickerModel().addListener(_updateMoney);
+
+    _controller.addListener(_updateIsPanelAtTop);
+  }
+
+  void _updateIsPanelAtTop() {
+    if (_controller.isAttached) {
+      final newValue = _controller.size > 0.5;
+
+      if (newValue != isPanelAtTop) {
+        setState(() => isPanelAtTop = newValue);
+      }
+    }
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_updateIsPanelAtTop);
     FishClickerModel().removeListener(_updateValue);
     FishClickerModel().removeListener(_updateMoney);
     _priceAnimator?.dispose();
@@ -62,6 +76,11 @@ class _StocksState extends State<Stocks> with TickerProviderStateMixin {
   bool get canSell => FishClickerModel().stocks >= 1 && enabledButtons;
 
   bool enabledButtons = true;
+
+  double get panelTapDestination => isPanelAtTop ? 0 : 1.0;
+
+  bool isPanelAtTop = false;
+
   @override
   Widget build(BuildContext context) {
     final minSize = 210 / MediaQuery.sizeOf(context).height;
@@ -69,6 +88,7 @@ class _StocksState extends State<Stocks> with TickerProviderStateMixin {
 
     return SizedBox(
       height: height + 50,
+      width: min(600, MediaQuery.of(context).size.width),
       child: DraggableScrollableSheet(
         controller: _controller,
         maxChildSize: 1,
@@ -78,148 +98,191 @@ class _StocksState extends State<Stocks> with TickerProviderStateMixin {
         snapSizes: [minSize, 1.0],
         builder: (context, scrollController) => SingleChildScrollView(
           controller: scrollController,
-          child: Card(
-            margin: EdgeInsets.all(16.0),
-            surfaceTintColor: Colors.green,
-            shape: ContinuousRectangleBorder(
-              borderRadius: BorderRadiusGeometry.circular(64.0),
-              side: BorderSide(color: Colors.green, width: 8.0),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                // Background image
-                Opacity(
-                  opacity: 0.1,
-                  child: ImageFiltered(
-                    imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-                    child: Image.asset(
-                      'assets/stonks.jpg',
-                      colorBlendMode: BlendMode.color,
-                      fit: BoxFit.fill,
+          physics: NeverScrollableScrollPhysics(),
+          child: Stack(
+            children: [
+              Card(
+                margin: EdgeInsets.all(16.0),
+                surfaceTintColor: Colors.green,
+                shape: ContinuousRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(64.0),
+                  side: BorderSide(color: Colors.green, width: 8.0),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  children: [
+                    // Background image
+                    Opacity(
+                      opacity: 0.1,
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                        child: Image.asset(
+                          'assets/stonks.jpg',
+                          colorBlendMode: BlendMode.color,
+                          fit: BoxFit.fill,
+                          height: height.toDouble(),
+                          width: MediaQuery.sizeOf(context).width,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
                       height: height.toDouble(),
-                      width: MediaQuery.sizeOf(context).width,
-                      color: Colors.green,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: height.toDouble(),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Column(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            ListenableBuilder(
-                              listenable: FishClickerModel(),
-                              builder: (context, child) => Text(
-                                "Stocks: ${FishClickerModel().stocks}",
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontFamily: 'BabyDoll',
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListenableBuilder(
+                                  listenable: FishClickerModel(),
+                                  builder: (context, child) => Text(
+                                    "Stocks: ${FishClickerModel().stocks}",
+                                    style: TextStyle(
+                                      fontSize: 32,
+                                      fontFamily: 'BabyDoll',
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            AnimatedBuilder(
-                              animation: _moneyAnimator!,
-                              builder: (context, child) => Text(
-                                "Your money: ${_moneyAnimator!.value.toStringAsFixed(2)}\$",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontFamily: 'BabyDoll',
+                                AnimatedBuilder(
+                                  animation: _moneyAnimator!,
+                                  builder: (context, child) => Text(
+                                    "Your money: ${_moneyAnimator!.value.toStringAsFixed(2)}\$",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontFamily: 'BabyDoll',
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 12.0),
-                            ListenableBuilder(
-                              listenable: FishClickerModel(),
-                              builder: (context, child) => _Button(
-                                color: Colors.yellow,
-                                text: "Convert to points",
-                                onPressed:
-                                    FishClickerModel().convertMoneyToPoints,
-                              ),
-                            ),
-                            Spacer(),
-                            AnimatedBuilder(
-                              animation: _priceAnimator!,
-                              builder: (context, child) => Text(
-                                "Value: ${_priceAnimator!.value.toStringAsFixed(2)}\$",
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontFamily: 'BabyDoll',
-                                  color: Colors.green,
+                                const SizedBox(height: 12.0),
+                                ListenableBuilder(
+                                  listenable: FishClickerModel(),
+                                  builder: (context, child) => _Button(
+                                    color: Colors.yellow,
+                                    text: "Convert to points",
+                                    onPressed:
+                                        FishClickerModel().convertMoneyToPoints,
+                                  ),
                                 ),
-                              ),
+                                Spacer(),
+                                AnimatedBuilder(
+                                  animation: _priceAnimator!,
+                                  builder: (context, child) => Text(
+                                    "Value: ${_priceAnimator!.value.toStringAsFixed(2)}\$",
+                                    style: TextStyle(
+                                      fontSize: 32,
+                                      fontFamily: 'BabyDoll',
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Buttons
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                SyncIndicator(),
+                                Spacer(),
+                                AnimatedBuilder(
+                                  animation: _priceAnimator!,
+                                  builder: (context, child) => _Button(
+                                    color: Colors.blue,
+                                    text: "Buy stock",
+                                    onPressed: canBuy
+                                        ? () {
+                                            setState(
+                                              () => enabledButtons = false,
+                                            );
+                                            Future.delayed(
+                                              const Duration(seconds: 1),
+                                              () => setState(
+                                                () => enabledButtons = true,
+                                              ),
+                                            );
+
+                                            FishClickerModel().buyStock(
+                                              _priceAnimator!.value,
+                                            );
+                                          }
+                                        : null,
+                                  ),
+                                ),
+                                SizedBox(height: 12.0),
+                                AnimatedBuilder(
+                                  animation: _priceAnimator!,
+                                  builder: (context, child) => _Button(
+                                    color: Colors.orange,
+                                    text: "Sell stock",
+                                    onPressed: canSell
+                                        ? () {
+                                            setState(
+                                              () => enabledButtons = false,
+                                            );
+                                            Future.delayed(
+                                              const Duration(seconds: 1),
+                                              () => setState(
+                                                () => enabledButtons = true,
+                                              ),
+                                            );
+
+                                            FishClickerModel().sellStock(
+                                              _priceAnimator!.value,
+                                            );
+                                          }
+                                        : null,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-
-                        // Buttons
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            SyncIndicator(),
-                            Spacer(),
-                            AnimatedBuilder(
-                              animation: _priceAnimator!,
-                              builder: (context, child) => _Button(
-                                color: Colors.blue,
-                                text: "Buy stock",
-                                onPressed: canBuy
-                                    ? () {
-                                        setState(() => enabledButtons = false);
-                                        Future.delayed(
-                                          const Duration(seconds: 1),
-                                          () => setState(
-                                            () => enabledButtons = true,
-                                          ),
-                                        );
-
-                                        FishClickerModel().buyStock(
-                                          _priceAnimator!.value,
-                                        );
-                                      }
-                                    : null,
-                              ),
-                            ),
-                            SizedBox(height: 12.0),
-                            AnimatedBuilder(
-                              animation: _priceAnimator!,
-                              builder: (context, child) => _Button(
-                                color: Colors.orange,
-                                text: "Sell stock",
-                                onPressed: canSell
-                                    ? () {
-                                        setState(() => enabledButtons = false);
-                                        Future.delayed(
-                                          const Duration(seconds: 1),
-                                          () => setState(
-                                            () => enabledButtons = true,
-                                          ),
-                                        );
-
-                                        FishClickerModel().sellStock(
-                                          _priceAnimator!.value,
-                                        );
-                                      }
-                                    : null,
-                              ),
-                            ),
-                          ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment(0.3, 0),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.black87),
+                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      shape: WidgetStatePropertyAll(
+                        ContinuousRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(24.0),
+                          side: BorderSide(color: Colors.green, width: 4.0),
                         ),
-                      ],
+                      ),
+                    ),
+                    onPressed: () {
+                      _controller.animateTo(
+                        panelTapDestination,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.decelerate,
+                      );
+                    },
+                    child: SizedBox(
+                      width: 48,
+                      child: Icon(
+                        size: 24,
+                        isPanelAtTop
+                            ? Icons.keyboard_arrow_down
+                            : Icons.keyboard_arrow_up,
+                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

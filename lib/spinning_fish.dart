@@ -99,8 +99,8 @@ class _SpinningFishState extends State<SpinningFish>
             alignment: Alignment.center,
             children: [
               AnimatedContainer(
-                height: MediaQuery.of(context).size.width / 1.1,
-                width: MediaQuery.of(context).size.width / 1.1,
+                height: min(400, MediaQuery.of(context).size.width / 1.1),
+                width: min(400, MediaQuery.of(context).size.width / 1.1),
                 duration: const Duration(milliseconds: 500),
                 clipBehavior: Clip.none,
                 decoration: BoxDecoration(
