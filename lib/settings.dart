@@ -1,5 +1,6 @@
 import 'package:fish_clicker/model.dart';
 import 'package:fish_clicker/username.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -110,11 +111,13 @@ class _SettingsState extends State<Settings> {
               ),
               SizedBox(height: 12.0),
               InkWell(
-                onTap: () async => await launchUrl(
-                  Uri.parse(
-                    'https://github.com/Crash285github/fish_clicker/releases',
-                  ),
-                ),
+                onTap: kIsWeb
+                    ? null
+                    : () async => await launchUrl(
+                        Uri.parse(
+                          'https://github.com/Crash285github/fish_clicker/releases',
+                        ),
+                      ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12.0,
@@ -131,7 +134,7 @@ class _SettingsState extends State<Settings> {
                         ),
                       ),
                       Spacer(),
-                      Icon(Icons.update, color: Colors.blue),
+                      if (!kIsWeb) Icon(Icons.update, color: Colors.blue),
                     ],
                   ),
                 ),

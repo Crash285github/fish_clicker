@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:fish_clicker/model.dart';
@@ -69,6 +70,7 @@ class _StocksState extends State<Stocks> with TickerProviderStateMixin {
 
     return SizedBox(
       height: height + 50,
+      width: min(600, MediaQuery.of(context).size.width),
       child: DraggableScrollableSheet(
         controller: _controller,
         maxChildSize: 1,
