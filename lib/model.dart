@@ -15,6 +15,8 @@ class FishClickerModel extends ChangeNotifier {
   final syncNotifier = ValueNotifier(0);
   bool _sendingRefreshRequests = false;
 
+  int fishState = 0;
+
   String? _userId;
   String? get userId => _userId;
   set userId(final String? value) {
@@ -119,11 +121,11 @@ class FishClickerModel extends ChangeNotifier {
   }
 
   void recalculateStocks(_) {
-    final minValue = -8.1;
+    final minValue = -8.5;
     final maxValue = 8;
     final rand = Random().nextDouble() * (maxValue - minValue) + minValue;
 
-    stockPrice = max(1, rand + stockPrice);
+    stockPrice = max(1, rand + stockPrice + (fishState / 3) * 0.3);
   }
 
   void buyStock(final double price) {

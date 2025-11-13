@@ -52,12 +52,16 @@ class _SpinningFishState extends State<SpinningFish>
 
   Color get glowColor {
     if (clicksPerSecond >= 30) {
+      FishClickerModel().fishState = 3;
       return Colors.purple.withAlpha(255);
     } else if (clicksPerSecond >= 15) {
+      FishClickerModel().fishState = 2;
       return Colors.orange.withAlpha(255);
     } else if (clicksPerSecond >= 5) {
+      FishClickerModel().fishState = 1;
       return Colors.blue.withAlpha(255);
     } else {
+      FishClickerModel().fishState = 0;
       return Colors.white.withAlpha(100);
     }
   }
